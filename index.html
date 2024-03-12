@@ -1,0 +1,642 @@
+<html>
+<!-- HEADER -->
+<head>
+    <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+
+    <title>Demo page of "PitchFlow: adding pitch control to a Flow-matching based TTS model (INTERSPEECH 2024 review)"</title>
+    <!-- <link rel="icon" href="resources/img/icon.png"> -->
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/text.css">
+    <link rel="stylesheet" href="css/media.css">
+    <link rel="stylesheet" href="css/select.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100&display=swap"
+          rel="stylesheet">
+</head>
+
+<!-- MAIN BODY -->
+<body>
+<div class="main">
+    <!-- HEADER -->
+    <br>
+    <h1 class="wrapper">PitchFlow: adding pitch control to a Flow-matching based TTS model</h1>
+    <p class="wrapper">Under review as a conference paper at INTERSPEECH 2024 <a href="">pdf</a></p>
+
+    <!-- ABSTRACT -->
+    <h2 class="wrapper">Abstract</h2>
+    <p class="wrapper">In recent years, there have been various attempts to improve denoising diffusion probabilistic models and make them more suitable for real-world applications. One of the recentadvances in this research direction is a flow-matching models framework which has already shown good results in image and speech generation tasks. Despite high quality and generation speed, flow-matching text-to-speech models still have problems with stability and control. To mitigate this issue, we propose two techniques: speaker scoring and pitch guidance allowing to control timbre and pitch contour of the generated speech. We show that the optimal choice of the prior leads to considerable improvement of similarity and a specific design of classifier guidance allows for fine-grained pitch control with high naturalness. Moreover, these techniques may be used to implement a voice conversion system of a competitive quality.</p>
+
+
+    
+    <!-- 2 MOS AUDIO SAMPLES -->
+    <h2 class="wrapper">1 Speaker scoring</h2>
+    <!-- <p class="wrapper">In this section we provide audio samples used in AB test for multimodal systems comparison.</p>
+    <h4 class="wrapper">1.1 NAUTILUS</h4>
+    <div class="wrapper" style="text-align: center;">
+        
+        <table >
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td style="text-align: left;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>VCC2TF1</td>
+                <td>VCC2TF2</td>
+                <td>VCC2TM1</td>
+                <td>VCC2TM2</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>GT</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/GT_VCC2TF1.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/GT_VCC2TF2.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/GT_VCC2TM1.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/GT_VCC2TM2.wav"></audio></td>
+            </tr>
+            <tr><td><br></td></tr>
+            <tr>
+                <td colspan="2" style="text-align: left;"><h3>Cloning (on 5 minutes)</h3></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>VCC2TF1</td>
+                <td>VCC2TF2</td>
+                <td>VCC2TM1</td>
+                <td>VCC2TM2</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="table_text" colspan="2"><b> Text: </b>and the whole ship creaking, groaning, and jumping like a manufactory
+                </td>
+                 /<td></td>
+                <td class="table_text" colspan="2"><b> Text: </b>The proper course to pursue is to offer your name and address</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">
+                    <a href="https://nii-yamagishilab.github.io/sample-versatile-voice-cloning"><i>Nautilus</a></i>:
+                </td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF1_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF2_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM1_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM2_cloning.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Ours</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF1_cloning_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF2_cloning_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM1_cloning_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM2_cloning_5min_150.wav"></audio></td>
+            </tr>
+            <tr><td><br></td></tr>
+            <tr>
+                <td style="text-align: left;"><h3>Conversion</h3></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>VCC2TF1</td>
+                <td>VCC2TF2</td>
+                <td>VCC2TM1</td>
+                <td>VCC2TM2</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Source</i>:</td>
+                <td colspan="2"><audio controls=""><source src="resources/audio/hybrids/nautilus/source/f1.wav"></audio></td>
+                <td colspan="2"><audio controls=""><source src="resources/audio/hybrids/nautilus/source/m1.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">
+                    <a href="https://nii-yamagishilab.github.io/sample-versatile-voice-cloning"><i>Nautilus</a></i>:
+                </td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF1_conversion1.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF2_conversion1.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM1_conversion1.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM2_conversion1.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Ours</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF1_conversion1_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF2_conversion1_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM1_conversion1_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM2_conversion1_5min_150.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Source</i>:</td>
+                <td colspan="2"><audio controls=""><source src="resources/audio/hybrids/nautilus/source/f2.wav"></audio></td>
+                <td colspan="2"><audio controls=""><source src="resources/audio/hybrids/nautilus/source/m2.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">
+                    <a href="https://nii-yamagishilab.github.io/sample-versatile-voice-cloning"><i>Nautilus</a></i>:
+                </td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF1_conversion2.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TF2_conversion2.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM1_conversion2.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/N_VCC2TM2_conversion2.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Ours</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF1_conversion2_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TF2_conversion2_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM1_conversion2_5min_150.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/nautilus/VCC2TM2_conversion2_5min_150.wav"></audio></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>       
+    <h4 class="wrapper">1.2 A Unified Speaker Adaptation Method</h4>
+    <div class="wrapper" style="text-align: center;">
+        
+        <table >
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td colspan=2 style="text-align: left;"><h3>Cloning (on 10 samples)</h3></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td>p254</td>
+                <td>p236</td>
+                <td>p264</td>
+                <td>p345</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>GT</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p254_gt_same.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p236_gt_same.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p264_gt_same.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p345_gt_same.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">
+                    <a href="https://nii-yamagishilab.github.io/sample-tts-unified-adaptation"><i>Unified</a></i>:
+                </td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p254_bb_all_u10.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p236_bb_all_u10.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p264_bb_all_u10.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p345_bb_all_u10.wav"></audio></td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;"><i>Ours</i>:</td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p254_150_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p236_150_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p264_150_cloning.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/hybrids/unified/p345_150_cloning.wav"></audio></td>
+            </tr>
+            <tr><td><br></td></tr>
+        </tbody>
+    </table>
+
+
+    </div>
+    <h2 class="wrapper">2 Comparison with single-task systems</h2>
+    <h3 class="wrapper">2.1 Voice Conversion</h3>
+    <p class="wrapper">In this section we provide a subset of audio samples used in Mean Opinion Score evaluation for
+        voice conversion task. We compare baselines with our unified diffusion-based model in 
+        few-shot (FSL) scenario for speakers from VCTK unseen during training. All models were train on LibriTTS dataset. </p>
+    <div class="wrapper" style="text-align: center;">
+        <span class="choose">Choose a pair of voices:</span>
+
+        <div class="dropdown">
+            <div class="select">
+                <span>Select pair</span>
+                <i class="fa fa-chevron-left"></i>
+            </div>
+            <input type="hidden" name="gender">
+            <ul class="dropdown-menu conversion">
+                <li id="p228-p225">p228-p225</li>
+                <li id="p244-p261">p244-p261</li>
+                <li id="p247-p347">p247-p347</li>
+                <li id="p250-p254">p250-p254</li>
+                <li id="p250-p272">p250-p272</li>
+                <li id="p253-p238">p253-p238</li>
+                <li id="p361-p280">p361-p280</li>
+                <li id="p362-p229">p362-p229</li>
+                <li id="p363-p362">p363-p362</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="vcpair">
+        <table class="wrapper">
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td></td>
+                <td><b>Source</b></td>
+                <td><b>Target</b></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <audio controls=""><source src="resources/audio/conversion/p228-p225/source.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/conversion/p228-p225/target.wav"></audio>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td><br></td>
+            </tr>
+            
+            <td></td>
+                <td>FS-PPG-VC</td>
+                <td><a href="https://github.com/liusongxiang/ppg-vc">BNE-PPG-VC</a></td>
+                <td>Ours</td>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td>
+                    <audio controls=""><source src="resources/audio/conversion/p228-p225/ppgvc1_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/conversion/p228-p225/ppgvc2_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/conversion/p228-p225/diffvc_fsl.wav"></audio>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="wrapper">2.2 Voice Cloning</h3>
+    <h4 class="wrapper">2.2.1 VCTK</h4>
+    <p class="wrapper">In this section we provide a subset of audio samples used in Mean Opinion Score evaluation for
+        voice cloning task on speakers from VCTK.</p>
+    <div class="wrapper" style="text-align: center;">
+        <span class="choose">Choose a speaker:</span>
+
+        <div class="dropdown">
+            <div class="select">
+                <span>Select speaker</span>
+                <i class="fa fa-chevron-left"></i>
+            </div>
+            <input type="hidden" name="gender">
+            <ul class="dropdown-menu cloning">
+                <li id="p231">p231</li>
+                <li id="p237">p237</li>
+                <li id="p243">p243</li>
+                <li id="p246">p246</li>
+                <li id="p250">p250</li>
+                <li id="p272">p272</li>
+                <li id="p294">p294</li>
+                <li id="p302">p302</li>
+                <li id="p334">p334</li>
+                <li id="p343">p343</li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrapper_cloning">
+        <table class="wrapper smaller_audio">
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td></td>
+                <td><b>p231</b></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231/target.wav"></audio>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="8" class="table_text"><b> Text: </b>When a man looks for something beyond his reach, his
+                    friends say he is looking for the pot of gold of the end of the rainbow.
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="https://github.com/KevinMIN95/StyleSpeech">StyleSpeech</a></td>
+                <td>FastSpeech</a></td>
+                <td>Tacotron-SMA</td>
+                <td>Grad-TTS</td>
+                <td>Ours</td>
+
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/cloning/p231/stylespeech_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/p231/fs_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/p231/sma_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/p231/gradtts_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/p231/diffvc_fsl.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td class="table_text" colspan="8"><b> Text: </b>Throughout the centuries people have explained the
+                    rainbow in various ways.
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="https://github.com/KevinMIN95/StyleSpeech">StyleSpeech</a></td>
+                <td>FastSpeech</a></td>
+                <td>Tacitron-SMA</td>
+                <td>Grad-TTS</td>
+                <td>Ours</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231_4/stylespeech_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231_4/fs_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231_4/sma_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231_4/gradtts_fsl.wav"></audio>
+                </td>
+                <td>
+                    <audio controls=""><source src="resources/audio/cloning/p231_4/diffvc_fsl.wav"></audio>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="wrapper">2.2.2 Internal speakers</h4>
+    <p class="wrapper">Voice cloning results for some speakers for additional test.</p>
+    <div class="wrapper" style="text-align: center;">
+        <span class="choose">Choose a speaker:</span>
+        <div class="dropdown">
+            <div class="select">
+                <span>Select speaker</span>
+                <i class="fa fa-chevron-left"></i>
+            </div>
+            <input type="hidden" name="gender">
+            <ul class="dropdown-menu cloning_additional">
+                <li id="scarlett">scarlett</li>
+                <li id="amanda2">amanda</li>
+                <li id="rachel">rachel</li>
+                <li id="thomas">thomas</li>
+                <li id="arthur">arthur</li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrapper_cloning_additional">
+        <table class="wrapper smaller_audio">
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td></td>
+                <td><b>scarlett</b></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <audio controls="" src="resources/audio/cloning/scarlett/target.wav"><source src=""></audio>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="8" class="table_text"><b> Text: </b>When a man looks for something beyond his reach, his
+                    friends say he is looking for the pot of gold of the end of the rainbow.
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="https://github.com/KevinMIN95/StyleSpeech">StyleSpeech</a></td>
+                <td>FastSpeech</a></td>
+                <td>Tacotron-SMA</td>
+                <td>Grad-TTS</td>
+                <td>Ours</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett/stylespeech_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett/fs_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett/sma_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett/gradtts_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett/diffvc_fsl.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="8" class="table_text"><b> Text: </b>Does Jane know about your new job? No, and don't you dare tell her! She will be furious!
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="https://github.com/KevinMIN95/StyleSpeech">StyleSpeech</a></td>
+                <td>FastSpeech</a></td>
+                <td>Tacotron-SMA</td>
+                <td>Grad-TTS</td>
+                <td>Ours</td>
+
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_2/stylespeech_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_2/fs_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_2/sma_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_2/gradtts_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_2/diffvc_fsl.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="table_text" colspan="8"><b> Text: </b>Throughout the centuries people have explained the
+                    rainbow in various ways.
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><a href="https://github.com/KevinMIN95/StyleSpeech">StyleSpeech</a></td>
+                <td>FastSpeech</a></td>
+                <td>Tacitron-SMA</td>
+                <td>Grad-TTS</td>
+                <td>Ours</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_4/stylespeech_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_4/fs_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_4/sma_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_4/gradtts_fsl.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/cloning/scarlett_4/diffvc_fsl.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="wrapper">2.2.3 Voice Cloning dependence on amount of data</h4>
+    <p class="wrapper">We studied the influence of the amount of adaptation data on the quality of the
+        speech synthesized by our system in a few-shot mode. The dataset was decreased from 60 seconds to 30, 15 and 5
+        which correspond to 6, 3 and 1 audio samples. </p>
+    <div class="wrapper" style="text-align: center;">
+        <span class="choose">Choose a speaker:</span>
+
+        <div class="dropdown">
+            <div class="select">
+                <span>Select speaker</span>
+                <i class="fa fa-chevron-left"></i>
+            </div>
+            <input type="hidden" name="gender">
+            <ul class="dropdown-menu cloning_dataset_len">
+                <li id="scarlett">scarlett</li>
+                <li id="p225">p225</li>
+                <li id="p229">p229</li>
+                <li id="p231">p231</li>
+                <li id="p233">p233</li>
+                <li id="p243">p243</li>
+                <li id="p253">p253</li>
+                <li id="p261">p261</li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrapper_cloning_dataset_len">
+        <table class="wrapper smaller_audio">
+            <tbody style="margin-right: auto; text-align: center;">
+            <tr>
+                <td></td>
+                <td><b>scarlett</b></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <audio controls="" src="resources/audio/dataset_len_test/scarlett/target.wav"><source src=""></audio>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="8" class="table_text"><b> Text: </b>When a man looks for something beyond his reach, his
+                    friends say he is looking for the pot of gold of the end of the rainbow.
+                </td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>5s</td>
+                <td>15s</td>
+                <td>30s</td>
+                <td>60s</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett/5s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett/15s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett/30s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett/60s.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="table_text" colspan="8"><b> Text: </b>Throughout the centuries people have explained the
+                    rainbow in various ways.
+                </td>
+            </tr>
+            
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>5s</td>
+                <td>15s</td>
+                <td>30s</td>
+                <td>60s</td>
+            </tr>
+            <tr>
+                <td style="font-size: medium; text-align: right;"><i style="font-weight: 700;">FSL</i>:</td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett_4/5s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett_4/15s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett_4/30s.wav"></audio></td>
+                <td><audio controls=""><source src="resources/audio/dataset_len_test/scarlett_4/60s.wav"></audio></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script language="JavaScript" type="text/javascript" src="js/select.js"></script> -->
+    <br><br><br>
+    <p class="wrapper" style="text-align: center; font-weight: 300;">March 2024</p>
+    <br><br><br>
+</div>
+
+</body>
+</html>
