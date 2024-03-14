@@ -1,0 +1,28 @@
+audio {
+    margin: auto;
+    width: 230px;
+    min-width: 50px;
+    display: flex;
+    padding: 5px;
+}
+
+.smaller_audio audio {
+    width: 180px;
+}
+
+.vcpair {
+    margin: auto;
+    padding: 30px 0% 2px 0%;
+    border-left: 0px solid #999;
+    border-right: 0px solid #999;
+    border-bottom: 0px dashed #999;
+}
+
+.fine_grained_control img {
+    width: 110%;
+    align-content: : auto;
+}
+
+.fine_grained_text {
+    padding: 0 15px 0 15px;
+}
